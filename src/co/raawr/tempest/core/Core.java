@@ -118,6 +118,27 @@ public class Core {
     public void onDisconnect() {
     }
 
+    public void kick(String channel, String nick) {
+        out.forceLine("KICK " + channel + " " + nick);
+    }
+
+    public void kick(String channel, String nick, String reason) {
+        out.forceLine("KICK " + channel + " " + nick + " :" + reason);
+    }
+
+    public void ban(String channel, String nick) {
+        setMode(channel, "+b", new String[]{nick});
+    }
+
+    public void setMode(String channel, String mode, String[] args) {
+        String arguments = "";
+        for (String s : args) {
+            arguments = arguments.concat(" " + s);
+        }
+        String a = "MODE " + channel + " " + mode + " " + arguments;
+        out.forceLine(a.trim());
+    }
+
     public void setNick(String nick) {
         this.nick = nick.trim();
     }
@@ -191,6 +212,13 @@ public class Core {
                 case "MODE":
                     handleMode(mask, line);
                     break;
+                case "KICK":
+                    break;
+                case "JOIN":
+                    handleJoin(mask, line);
+                    break;
+                case "PART":
+                    break;
                 default:
                     //Unhandled command
                     break;
@@ -227,8 +255,8 @@ public class Core {
         String[] parse = line.split(" ");
         String message = line.substring(line.indexOf(":", 1) + 1);
         String nickname = hostmask.substring(0, hostmask.indexOf("!"));
-        String realname = hostmask.substring(line.indexOf("!") + 1, line.indexOf("@"));
-        String hostname = hostmask.substring(line.indexOf("@") + 1);
+        String realname = hostmask.substring(hostmask.indexOf("!") + 1, hostmask.indexOf("@"));
+        String hostname = hostmask.substring(hostmask.indexOf("@") + 1);
         String channel = parse[2];
 
         if (message.startsWith("\001")) {
@@ -247,8 +275,8 @@ public class Core {
         String[] parse = line.split(" ");
         String message = line.substring(line.indexOf(":", 1) + 1);
         String nickname = hostmask.substring(0, hostmask.indexOf("!"));
-        String realname = hostmask.substring(line.indexOf("!") + 1, line.indexOf("@"));
-        String hostname = hostmask.substring(line.indexOf("@") + 1);
+        String realname = hostmask.substring(hostmask.indexOf("!") + 1, hostmask.indexOf("@"));
+        String hostname = hostmask.substring(hostmask.indexOf("@") + 1);
         String channel = parse[2];
 
         //Disregard if target is not a channel
@@ -275,10 +303,6 @@ public class Core {
                     break;
             }
         }
-    }
-
-    public void changeNick(String nick) {
-
     }
 
     public void onChannelMode(String nick, String channel, String mode, String target) {
@@ -312,14 +336,23 @@ public class Core {
 
     private void handleNotice(String hostmask, String line) {
         String message = line.substring(line.indexOf(":", 1) + 1);
+        onNotice(getNick(hostmask), message);
+    }
 
-        if (hostmask.matches(".+!~.+@.+")) {
+    private void handleJoin(String hostmask, String line) {
+        String[] parse = line.split(" ");
+        onJoin(getNick(hostmask), parse[2]);
+    }
+
+    public void onJoin(String nick, String channel) {
+    }
+
+    private String getNick(String hostmask) {
+        if (hostmask.matches(".+!.+@.+")) {
             String nickname = hostmask.substring(0, hostmask.indexOf("!"));
-            String realname = hostmask.substring(line.indexOf("!") + 1, line.indexOf("@"));
-            String hostname = hostmask.substring(line.indexOf("@") + 1);
-            onNotice(nickname, message);
+            return nickname;
+        } else {
+            return hostmask;
         }
-
-        onNotice(hostmask, message);
     }
 }
