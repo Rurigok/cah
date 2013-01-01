@@ -356,7 +356,7 @@ public class Core {
 
     private void handleJoin(String hostmask, String line) {
         String[] parse = line.split(" ");
-        onJoin(getNick(hostmask), parse[2]);
+        onJoin(getNick(hostmask), parse[2].replaceFirst(":", ""));
     }
 
     public void onJoin(String nick, String channel) {
