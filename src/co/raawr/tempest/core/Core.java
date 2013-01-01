@@ -126,6 +126,9 @@ public class Core {
         out.forceLine("KICK " + channel + " " + nick + " :" + reason);
     }
 
+    public void onKick(String channel, String sourceNick, String targetNick, String reason) {
+    }
+
     public void ban(String channel, String nick) {
         setMode(channel, "+b", new String[]{nick});
     }
@@ -213,11 +216,13 @@ public class Core {
                     handleMode(mask, line);
                     break;
                 case "KICK":
+                    handleKick(mask, line);
                     break;
                 case "JOIN":
                     handleJoin(mask, line);
                     break;
                 case "PART":
+                    //TODO
                     break;
                 default:
                     //Unhandled command
@@ -240,9 +245,6 @@ public class Core {
         if (channel.startsWith("#")) {
             out.queueLine("JOIN " + channel);
             channels.add(channel);
-        } else {
-            out.queueLine("JOIN #" + channel);
-            channels.add("#" + channel);
         }
         print("Joined channel successfully.");
     }
@@ -298,20 +300,33 @@ public class Core {
                     plus = false;
                     break;
                 default:
-                    onChannelMode(nickname, channel, (plus ? "+" : "-") + c, parse[mc + 3]);
-                    mc++;
+                    if (parse.length >= mc + 3) {
+                        onChannelUserMode(nickname, channel, (plus ? "+" : "-") + c, parse[mc + 3]);
+                        mc++;
+                    }
                     break;
             }
         }
     }
 
-    public void onChannelMode(String nick, String channel, String mode, String target) {
+    public void onChannelUserMode(String sourceNick, String channel, String mode, String target) {
+    }
+
+    public void onChannelMode(String sourceNick, String channel, String mode, String parameter) {
     }
 
     public void onMessage(String nick, String channel, String message) {
     }
 
     public void onNotice(String nick, String message) {
+    }
+
+    public void sendLine(String line) {
+        out.queueLine(line);
+    }
+
+    public void forceSendLine(String line) {
+        out.forceLine(line);
     }
 
     public void sendMessage(String target, String message) {
@@ -354,5 +369,17 @@ public class Core {
         } else {
             return hostmask;
         }
+    }
+
+    private void handleKick(String mask, String line) {
+        String[] parse = line.split(" ");
+        String nick = getNick(mask);
+        String channel = parse[2];
+        String target = parse[3];
+        String reason = "";
+        if (parse.length > 3) {
+            reason = line.substring(line.indexOf(":", 1) + 1);
+        }
+        onKick(channel, nick, target, reason);
     }
 }
