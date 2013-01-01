@@ -171,16 +171,6 @@ public class Core {
 
         String[] parse = line.split(" ");
 
-        String mask;
-        if (line.contains(":")) {
-            //Extract command source mask
-            mask = line.substring(line.indexOf(":") + 1, line.indexOf(" "));
-        } else {
-            //Unknown line, halt
-            err("Unknown line received.");
-            return;
-        }
-
         //Check for misc commands
         switch (parse[0]) {
             case "PING":
@@ -189,6 +179,16 @@ public class Core {
             case "ERROR":
                 err("Critical IRC error.");
                 return;
+        }
+
+        String mask;
+        if (line.contains(":")) {
+            //Extract command source mask
+            mask = line.substring(line.indexOf(":") + 1, line.indexOf(" "));
+        } else {
+            //Unknown line, halt
+            err("Unknown line received.");
+            return;
         }
 
         //Check for numeric status codes
