@@ -26,7 +26,6 @@ public class In extends Thread {
 
     private void listen() {
         BufferedReader r = null;
-
         try {
             r = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             String s;

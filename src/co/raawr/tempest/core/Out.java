@@ -24,7 +24,6 @@ public class Out extends Thread {
         try {
             sock = s;
             core = c;
-            //Initialize output stream
             out = new BufferedWriter(new PrintWriter(sock.getOutputStream()));
         } catch (IOException ex) {
             core.err("I/O exception.");
