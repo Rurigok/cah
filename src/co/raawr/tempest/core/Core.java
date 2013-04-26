@@ -267,6 +267,8 @@ public class Core {
                     sendNotice(nickname, "\001VERSION " + version + "\001");
                     break;
             }
+        } else if (!channel.equals(getNick())){
+            onPrivateMessage(nickname, message);
         } else {
             onMessage(nickname, channel, message);
         }
@@ -315,10 +317,13 @@ public class Core {
     public void onChannelMode(String sourceNick, String channel, String mode, String parameter) {
     }
 
-    public void onMessage(String nick, String channel, String message) {
+    public void onMessage(String sender, String channel, String message) {
     }
 
-    public void onNotice(String nick, String message) {
+    public void onPrivateMessage(String sender, String message) {
+    }
+
+    public void onNotice(String sender, String message) {
     }
 
     public void sendLine(String line) {
