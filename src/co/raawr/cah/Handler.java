@@ -4,7 +4,7 @@ public class Handler {
 
     static Main cah;
 
-    public static void initHandler(Main c) {
+    public static void init(Main c) {
         cah = c;
     }
 
@@ -25,16 +25,39 @@ public class Handler {
                     CAH.removePlayer(CAH.lookupPlayer(nick));
                     break;
                 case ".cah":
-                    CAH.startGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
+                    if (isInteger(parse[1])) {
+                        CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
+                    }
                     break;
                 case ".start":
                     CAH.begin(CAH.lookupPlayer(nick));
                     break;
                 case ".end":
+                case ".stop":
                     CAH.endGame(CAH.lookupPlayer(nick));
                     break;
             }
+        } else if (isInteger(command)) {
+            // It's the czar picking a card
+            CAH.czarPickCard(CAH.lookupPlayer(nick), Integer.parseInt(command));
         }
 
     }
+
+    public static void handlePM(String nick, String message) {
+        if (isInteger(message)) {
+            // Player picked their card
+            CAH.pickCard(CAH.lookupPlayer(nick), Integer.parseInt(message));
+        }
+    }
+
+    public static boolean isInteger(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 }

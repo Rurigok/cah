@@ -1,6 +1,8 @@
 package co.raawr.cah;
 
 import co.raawr.tempest.core.Core;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main extends Core {
 
@@ -18,14 +20,20 @@ public class Main extends Core {
     }
 
     private void initializeGame() {
-        Handler.initHandler(this);
-        CAH.initHandler(this);
+        Handler.init(this);
+        CAH.init(this);
         CAH.addCards();
     }
 
     @Override
     public void onConnection() {
-        joinChannel("#cah");
+        try {
+            identify("cahbot7543");
+            Thread.sleep(1000);
+            joinChannel("#cah");
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -42,13 +50,11 @@ public class Main extends Core {
 
         if (channel.equals(getNick())) {
             // Handle PM here
-
+            Handler.handlePM(nick, message);
         } else {
             // Handle command
             Handler.handleMessage(nick, channel, message);
         }
-
-
 
     }
 }

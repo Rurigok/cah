@@ -11,5 +11,4 @@ public class Card {
         this.content = content;
         this.expansion = expansion;
     }
-
 }

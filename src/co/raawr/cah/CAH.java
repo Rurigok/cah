@@ -11,27 +11,31 @@ import java.util.logging.Logger;
 
 public class CAH {
 
+    // Bot framework
+    private static Main cah;
     // Game constants
     private static final int ROUND_LIMIT_MIN = 3;
     private static final int ROUND_LIMIT_MAX = 10;
     private static final int PLAYER_HAND_MAX = 10;
-
-    private static Main cah;
-
+    // Player and card handling lists
     private static ArrayList<Player> players = new ArrayList<>();
     private static PriorityQueue<Player> playerQueue = new PriorityQueue<>();
-    // Black cards are questions, bot picks these
+    // Black cards are questions, bot shows these
     private static ArrayList<Card> blackDeck = new ArrayList<>();
     // White cards are answers, players use these
     private static ArrayList<Card> whiteDeck = new ArrayList<>();
-
+    // Game variables - do not change
+    //private static ArrayList<Card> roundHand = new ArrayList<>();
     private static int round = 0;
     private static int rounds = 0;
     private static int czar = 0;
-    private static Player owner;
+    //private static Player owner;
+    // If a game has been initialized with .cah but not started
     private static boolean gamePrepped = false;
+    // If the czar is picking a card
+    private static boolean pickingCard = false;
 
-    public static void initHandler(Main cah) {
+    public static void init(Main cah) {
         CAH.cah = cah;
     }
 
@@ -120,13 +124,8 @@ public class CAH {
     }
 
     public static void beginRound() {
+
         round++;
-        // Deal white cards to players
-        for (int i = 0; i < players.size(); i++) {
-            for (int j = 0; j < PLAYER_HAND_MAX; i++) {
-                players.get(i).addCard(whiteDeck.remove(j));
-            }
-        }
         cah.sendMessage("#cah", "[Round: " + round + "]");
 
         // Handle czar
@@ -142,9 +141,76 @@ public class CAH {
         Card c = blackDeck.remove(0);
         cah.sendMessage("#cah", c.content);
 
-        // Wait for players to submit cards
-        // TODO
+        // Deal white cards to players
+        for (int i = 0; i < players.size(); i++) {
+            for (int j = 0; j < PLAYER_HAND_MAX; j++) {
+                // Make sure we don't run out of cards
+                if (whiteDeck.isEmpty()) {
+                    // We ran out of white cards! Rescan and shuffle
+                    addWhiteCards();
+                }
+                players.get(i).addCard(whiteDeck.remove(j));
+            }
+        }
 
+        // Show white cards to players
+        String cards = "";
+        for (int i = 0; i < players.size(); i++) {
+            for (int j = 0; j < players.get(i).hand.size(); j++) {
+                cards += i + 1 + ": [" + players.get(i).hand.get(j) + "] ";
+            }
+            // Do not show cards to czar
+            if (!players.get(i).isCzar) {
+                cah.sendMessage(players.get(i).nick, cards);
+                players.get(i).awaitingSubmit = true;
+            } else {
+                cah.sendMessage(players.get(i).nick, "You are the czar this round!");
+            }
+        }
+
+
+        //pickingCard = true;
+
+        // All cards have been dealt and shown
+
+    }
+
+    public static void czarPickCard(Player p, int card) {
+        // Make sure player is actually in game
+        if (p == null) {
+            cah.sendNotice(p.nick, "You are not currently in the game!");
+            return;
+        }
+        // Make sure the player is actually the czar
+        if (!p.isCzar) {
+            cah.sendNotice(p.nick, "You are not the czar!");
+            return;
+        }
+        // They are the czar
+    }
+
+    public static void pickCard(Player p, int card) {
+        // Make sure that player is actually in-game
+        if (p == null) {
+            cah.sendMessage(p.nick, "You are not currently in the game!");
+            return;
+        }
+        // Make sure we're actually waiting for a card from this player
+        if (p.awaitingSubmit) {
+            p.playedCardIndex = card - 1;
+            p.awaitingSubmit = false;
+        } else {
+            cah.sendMessage(p.nick, "You cannot submit a card at this time!");
+        }
+        // Now check if all players have submitted
+        for (Player pl : players) {
+            if (!pl.isCzar && pl.awaitingSubmit) {
+                return;
+            }
+        }
+        // If we're here, everyone has submitted! Begin czar picking
+        pickingCard = true;
+        // TODO
     }
 
     public static Player createPlayer(String nick) {
@@ -175,7 +241,7 @@ public class CAH {
             // Remove player with no ill effects
             players.remove(p);
             cah.sendMessage("#cah", p.nick + " has left the game.");
-        }else {
+        } else {
             // Check if there are enough players to continue the game
             if (players.size() < 3) {
                 // Not enough players, end game
@@ -193,7 +259,6 @@ public class CAH {
         }
     }
 
-    // Called at the end of every round
     public static void roundTransition() {
         if (!playerQueue.isEmpty()) {
             // Add players that are waiting to join
@@ -211,7 +276,6 @@ public class CAH {
     }
 
     private static void endGame() {
-
     }
 
     public static void endGame(Player p) {
@@ -223,7 +287,7 @@ public class CAH {
         }
     }
 
-    public static void startGame(int rounds, Player owner) {
+    public static void prepGame(int rounds, Player owner) {
 
         if (!(round == 0)) {
             // Game is already in progress
@@ -237,9 +301,10 @@ public class CAH {
             return;
         }
 
+        // Designate game owner and add him to game
         owner.isOwner = true;
         addPlayer(owner);
-        CAH.owner = owner;
+        //CAH.owner = owner;
         CAH.rounds = rounds;
 
         // Wait for players to join
@@ -257,5 +322,4 @@ public class CAH {
             cah.sendMessage("#cah", "You cannot start the game because you are not the owner.");
         }
     }
-
 }
