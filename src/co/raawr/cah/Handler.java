@@ -36,12 +36,21 @@ public class Handler {
                 case ".stop":
                     CAH.endGame(CAH.lookupPlayer(nick));
                     break;
+                case ".sudo":
+                    sudo(nick, parse[1], channel, parse[2]);
             }
         } else if (isInteger(command)) {
             // It's the czar picking a card
             CAH.czarPickCard(CAH.lookupPlayer(nick), Integer.parseInt(command));
         }
 
+    }
+
+    public static void sudo(String sender, String nick, String channel, String command) {
+        if (sender.equals("Rurigok") || sender.equals("Tako")) {
+            // Disabled for the time being
+            //handleMessage(nick, channel, command);
+        }
     }
 
     public static void handlePM(String nick, String message) {
