@@ -111,9 +111,15 @@ public class CAH {
             return;
         }
 
+        if (players.contains(p)) {
+            cah.sendMessage("#cah", "You are already in the game.");
+            return;
+        }
+
         if (round == 0 && gamePrepped) {
             // A game has been prepped and not started
             players.add(p);
+            cah.sendMessage("#cah", p.nick + " has joined the game.");
         } else if (!gamePrepped) {
             // A game has not been prepped yet
             cah.sendMessage("#cah", "A game has not been started yet! Use .cah [rounds] to start one.");
@@ -160,15 +166,24 @@ public class CAH {
         // Show white cards to players
         String cards = "";
         for (int i = 0; i < players.size(); i++) {
+            // Show them the black card in PM
+            cah.sendMessage(players.get(i).nick, activeCard.content);
             for (int j = 0; j < players.get(i).hand.size(); j++) {
-                cards += i + 1 + ": [" + players.get(i).hand.get(j).content + "] ";
+                if (!players.get(i).isCzar) {
+                    // If message goes over 450, print the cards gotten thus far
+                    if (cards.length() > 450) {
+                        cah.sendMessage(players.get(i).nick, cards);
+                        cards = "";
+                    }
+                    cards += (j + 1) + ": [" + players.get(i).hand.get(j).content + "] ";
+                }
             }
             // Do not show cards to czar
-            if (!players.get(i).isCzar) {
-                cah.sendMessage(players.get(i).nick, cards);
-                players.get(i).awaitingSubmit = true;
-            } else {
+            if (players.get(i).isCzar) {
                 cah.sendMessage(players.get(i).nick, "You are the czar this round!");
+            } else {
+                // Show remaining cards to each player
+                cah.sendMessage(players.get(i).nick, cards);
             }
         }
 
@@ -219,7 +234,7 @@ public class CAH {
         // If we're here, everyone has submitted! Display picks and begin czar picking
         String cards = "";
         for (int i = 0; i < players.size(); i++) {
-            cards += "[" + (i + 1) + " : " + players.get(i).hand.get(players.get(i).playedCardIndex) + "] ";
+            cards += "[" + (i + 1) + " : " + players.get(i).hand.get(players.get(i).playedCardIndex).content + "] ";
         }
         cah.sendMessage("#cah", "Black card: [" + activeCard.content + "]");
         cah.sendMessage("#cah", cards);
@@ -319,17 +334,18 @@ public class CAH {
 
         // Wait for players to join
         gamePrepped = true;
+        cah.sendMessage("#cah", owner.nick + " has started a game! Type .join to join.");
 
         // Designate game owner and add him to game
         owner.isOwner = true;
         addPlayer(owner);
-
-        cah.sendMessage("#cah", owner.nick + " has started a game! Type .join to join.");
-
-        //beginRound();
     }
 
     public static void begin(Player p) {
+        if (players.size() < 3) {
+            cah.sendMessage("#cah", "At least 3 players are required to start a round.");
+            return;
+        }
         if (p.isOwner) {
             beginRound();
             gamePrepped = false;
