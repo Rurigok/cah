@@ -267,7 +267,7 @@ public class Core {
                     sendNotice(nickname, "\001VERSION " + version + "\001");
                     break;
             }
-        } else if (!channel.equals(getNick())){
+        } else if (!channel.equals(getNick())) {
             onPrivateMessage(nickname, message);
         } else {
             onMessage(nickname, channel, message);
@@ -278,9 +278,15 @@ public class Core {
     private void handleMode(String hostmask, String line) {
         String[] parse = line.split(" ");
         String message = line.substring(line.indexOf(":", 1) + 1);
-        String nickname = hostmask.substring(0, hostmask.indexOf("!"));
-        String realname = hostmask.substring(hostmask.indexOf("!") + 1, hostmask.indexOf("@"));
-        String hostname = hostmask.substring(hostmask.indexOf("@") + 1);
+        String nickname, realname, hostname = "";
+        if (hostmask.contains("!")) {
+            nickname = hostmask.substring(0, hostmask.indexOf("!"));
+            realname = hostmask.substring(hostmask.indexOf("!") + 1, hostmask.indexOf("@"));
+            hostname = hostmask.substring(hostmask.indexOf("@") + 1);
+        } else {
+            String servermask = hostmask.replace(":", "");
+            return;
+        }
         String channel = parse[2];
 
         //Disregard if target is not a channel
