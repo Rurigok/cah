@@ -1,7 +1,5 @@
 package co.raawr.cah;
 
-import java.util.ArrayList;
-
 public class Handler {
 
     static Main cah;
@@ -25,6 +23,9 @@ public class Handler {
                 case ".leave":
                 case ".quit":
                     CAH.removePlayer(CAH.lookupPlayer(nick));
+                    break;
+                case ".cah":
+                    CAH.startGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
                     break;
             }
         }

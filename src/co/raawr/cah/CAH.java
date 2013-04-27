@@ -25,6 +25,7 @@ public class CAH {
     // White cards are answers, players use these
     private static ArrayList<Card> whiteDeck = new ArrayList<>();
     private static int round = 0;
+    private static Player owner;
 
     public static void initHandler(Main cah) {
         CAH.cah = cah;
@@ -115,6 +116,7 @@ public class CAH {
                 players.get(i).addCard(whiteDeck.remove(j));
             }
         }
+        cah.sendMessage("#cah", "[Round: " + round + "]");
 
     }
 
@@ -134,6 +136,8 @@ public class CAH {
     public static void removePlayer(Player p) {
 
         if (p == null) {
+            // Player was not found
+            cah.sendMessage("#cah", "You are not currently in a game.");
             return;
         }
 
@@ -168,6 +172,25 @@ public class CAH {
         }
         // Onto the next round
         beginRound();
+    }
+
+    public static void startGame(int rounds, Player owner) {
+
+        if (!(round == 0)) {
+            // Game is already in progress
+            cah.sendMessage("#cah", "There is already a game in progress.");
+        }
+
+        if (!(rounds >= ROUND_LIMIT_MIN && rounds <= ROUND_LIMIT_MAX)) {
+            // Invalid rounds
+            cah.sendMessage("#cah", "Number of rounds must range from " + ROUND_LIMIT_MIN + " to " + ROUND_LIMIT_MAX + ".");
+        }
+
+        
+
+        owner.isOwner = true;
+        addPlayer(owner);
+        CAH.owner = owner;
     }
 
 }

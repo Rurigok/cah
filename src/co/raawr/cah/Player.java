@@ -6,6 +6,7 @@ public class Player {
 
     public ArrayList<Card> hand = new ArrayList<>();
     public boolean isCzar = false;
+    public boolean isOwner = false;
     public String nick;
     public int score = 0;
 
