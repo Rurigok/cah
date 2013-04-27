@@ -26,6 +26,7 @@ public class CAH {
     private static ArrayList<Card> whiteDeck = new ArrayList<>();
     // Game variables - do not change
     //private static ArrayList<Card> roundHand = new ArrayList<>();
+    private static Card activeCard;
     private static int round = 0;
     private static int rounds = 0;
     private static int czar = 0;
@@ -138,8 +139,11 @@ public class CAH {
         czar = (czar == players.size() - 1) ? 0 : czar + 1;
 
         // Deal black card
-        Card c = blackDeck.remove(0);
-        cah.sendMessage("#cah", c.content);
+        if (blackDeck.isEmpty()) {
+            addBlackCards();
+        }
+        activeCard = blackDeck.remove(0);
+        cah.sendMessage("#cah", activeCard.content);
 
         // Deal white cards to players
         for (int i = 0; i < players.size(); i++) {
@@ -157,7 +161,7 @@ public class CAH {
         String cards = "";
         for (int i = 0; i < players.size(); i++) {
             for (int j = 0; j < players.get(i).hand.size(); j++) {
-                cards += i + 1 + ": [" + players.get(i).hand.get(j) + "] ";
+                cards += i + 1 + ": [" + players.get(i).hand.get(j).content + "] ";
             }
             // Do not show cards to czar
             if (!players.get(i).isCzar) {
@@ -167,9 +171,6 @@ public class CAH {
                 cah.sendMessage(players.get(i).nick, "You are the czar this round!");
             }
         }
-
-
-        //pickingCard = true;
 
         // All cards have been dealt and shown
 
@@ -186,7 +187,14 @@ public class CAH {
             cah.sendNotice(p.nick, "You are not the czar!");
             return;
         }
-        // They are the czar
+        // They are the czar, check if ready to pick a card
+        if (pickingCard) {
+            // index of player who won
+            Player w = players.get(card - 1);
+            w.score++;
+            cah.sendMessage("#cah", w.nick + " has won this round. Current score: " + w);
+            roundTransistion();
+        }
     }
 
     public static void pickCard(Player p, int card) {
@@ -208,9 +216,14 @@ public class CAH {
                 return;
             }
         }
-        // If we're here, everyone has submitted! Begin czar picking
+        // If we're here, everyone has submitted! Display picks and begin czar picking
+        String cards = "";
+        for (int i = 0; i < players.size(); i++) {
+            cards += "[" + (i + 1) + " : " + players.get(i).hand.get(players.get(i).playedCardIndex) + "] ";
+        }
+        cah.sendMessage("#cah", "Black card: [" + activeCard.content + "]");
+        cah.sendMessage("#cah", cards);
         pickingCard = true;
-        // TODO
     }
 
     public static Player createPlayer(String nick) {
@@ -259,7 +272,7 @@ public class CAH {
         }
     }
 
-    public static void roundTransition() {
+    public static void roundTransistion() {
         if (!playerQueue.isEmpty()) {
             // Add players that are waiting to join
             for (Player p : playerQueue) {
