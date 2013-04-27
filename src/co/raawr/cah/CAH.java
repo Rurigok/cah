@@ -314,14 +314,17 @@ public class CAH {
             return;
         }
 
-        // Designate game owner and add him to game
-        owner.isOwner = true;
-        addPlayer(owner);
         //CAH.owner = owner;
         CAH.rounds = rounds;
 
         // Wait for players to join
         gamePrepped = true;
+
+        // Designate game owner and add him to game
+        owner.isOwner = true;
+        addPlayer(owner);
+
+        cah.sendMessage("#cah", owner.nick + " has started a game! Type .join to join.");
 
         //beginRound();
     }
