@@ -1,15 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package co.raawr.cah;
 
 import co.raawr.tempest.core.Core;
 
-/**
- *
- * @author Andrew
- */
 public class Main extends Core {
 
     public static void main(String[] args) {
