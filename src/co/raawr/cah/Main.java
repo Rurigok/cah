@@ -10,10 +10,11 @@ public class Main extends Core {
 
     public Main() {
         initializeGame();
-        setVersion("Cards Against Humanity");
+        //setVerbose(true);
+        setVersion("Cards Against Humanity ALPHA");
         setNick("Humanity_Bot");
         setName("cah");
-        connect("frogbox.es", 7000);
+        connect("frogbox.es", 6667);
     }
 
     private void initializeGame() {

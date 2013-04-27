@@ -48,7 +48,8 @@ public class CAH {
             String content;
 
             // Scan and add black cards
-            while ((line = sc.nextLine()) != null) {
+            while (sc.hasNextLine()) {
+                line = sc.nextLine();
                 if (line.matches("\\{.*\\}")) {
                     expansion = line.replace("{", "").replace("}", "");
                     continue;
@@ -59,6 +60,7 @@ public class CAH {
             }
             // Shuffle
             Collections.shuffle(blackDeck);
+            cah.print("Added " + blackDeck.size() + " black cards and shuffled.");
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(CAH.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,7 +77,8 @@ public class CAH {
             String content;
 
             // Scan and add white cards
-            while ((line = sc.nextLine()) != null) {
+            while (sc.hasNextLine()) {
+                line = sc.nextLine();
                 if (line.matches("\\{.*\\}")) {
                     expansion = line.replace("{", "").replace("}", "");
                     continue;
@@ -86,6 +89,7 @@ public class CAH {
             }
             // Shuffle
             Collections.shuffle(whiteDeck);
+            cah.print("Added " + whiteDeck.size() + " white cards and shuffled.");
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(CAH.class.getName()).log(Level.SEVERE, null, ex);
@@ -186,7 +190,7 @@ public class CAH {
             cah.sendMessage("#cah", "Number of rounds must range from " + ROUND_LIMIT_MIN + " to " + ROUND_LIMIT_MAX + ".");
         }
 
-        
+
 
         owner.isOwner = true;
         addPlayer(owner);
