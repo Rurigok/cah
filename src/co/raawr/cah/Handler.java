@@ -12,7 +12,22 @@ public class Handler {
 
     public static void handleMessage(String nick, String channel, String message) {
 
+        String[] parse = message.split(" ");
 
+        String command = parse[0].toLowerCase();
+
+        if (command.startsWith(".")) {
+            // It's a command - handle it
+            switch (command) {
+                case ".join":
+                    CAH.addPlayer(CAH.createPlayer(nick));
+                    break;
+                case ".leave":
+                case ".quit":
+                    CAH.removePlayer(CAH.lookupPlayer(nick));
+                    break;
+            }
+        }
 
     }
 

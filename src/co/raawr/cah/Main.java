@@ -9,17 +9,22 @@ public class Main extends Core {
     }
 
     public Main() {
-
-        CAH.addCards();
+        initializeGame();
         setVersion("Cards Against Humanity");
         setNick("Humanity_Bot");
         setName("cah");
         connect("frogbox.es", 7000);
     }
 
+    private void initializeGame() {
+        Handler.initHandler(this);
+        CAH.initHandler(this);
+        CAH.addCards();
+    }
+
     @Override
     public void onConnection() {
-        joinChannel("#coldstorm");
+        joinChannel("#cah");
     }
 
     @Override
@@ -39,7 +44,7 @@ public class Main extends Core {
 
         } else {
             // Handle command
-
+            Handler.handleMessage(nick, channel, message);
         }
 
 

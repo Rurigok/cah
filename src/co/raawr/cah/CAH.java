@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.PriorityQueue;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +31,8 @@ public class CAH {
     }
 
     public static void addCards() {
+        // Scans and adds cards to decks
+        // Should only be called once on startup
         addWhiteCards();
         addBlackCards();
     }
@@ -72,7 +73,7 @@ public class CAH {
             String expansion = "default";
             String content;
 
-            // Scan and add black cards
+            // Scan and add white cards
             while ((line = sc.nextLine()) != null) {
                 if (line.matches("\\{.*\\}")) {
                     expansion = line.replace("{", "").replace("}", "");
@@ -92,6 +93,10 @@ public class CAH {
 
     public static void addPlayer(Player p) {
 
+        if (p == null) {
+            return;
+        }
+
         if (round == 0) {
             // No game is in progress, add player
             players.add(p);
@@ -110,9 +115,27 @@ public class CAH {
                 players.get(i).addCard(whiteDeck.remove(j));
             }
         }
+
+    }
+
+    public static Player createPlayer(String nick) {
+        return new Player(nick);
+    }
+
+    public static Player lookupPlayer(String nick) {
+        for (Player p : players) {
+            if (p.nick.equalsIgnoreCase(nick)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     public static void removePlayer(Player p) {
+
+        if (p == null) {
+            return;
+        }
 
         if (round == 0) {
             // No game is in progress, remove immediately with no ill effects
