@@ -24,8 +24,12 @@ public class CAH {
     private static ArrayList<Card> blackDeck = new ArrayList<>();
     // White cards are answers, players use these
     private static ArrayList<Card> whiteDeck = new ArrayList<>();
+
     private static int round = 0;
+    private static int rounds = 0;
+    private static int czar = 0;
     private static Player owner;
+    private static boolean gamePrepped = false;
 
     public static void initHandler(Main cah) {
         CAH.cah = cah;
@@ -102,9 +106,12 @@ public class CAH {
             return;
         }
 
-        if (round == 0) {
-            // No game is in progress, add player
+        if (round == 0 && gamePrepped) {
+            // A game has been prepped and not started
             players.add(p);
+        } else if (!gamePrepped) {
+            // A game has not been prepped yet
+            cah.sendMessage("#cah", "A game has not been started yet! Use .cah [rounds] to start one.");
         } else {
             // Game is in progress, add at next round
             playerQueue.add(p);
@@ -121,6 +128,22 @@ public class CAH {
             }
         }
         cah.sendMessage("#cah", "[Round: " + round + "]");
+
+        // Handle czar
+        if (czar < players.size()) {
+            // Set czar
+            players.get(czar).isCzar = true;
+            cah.sendMessage("#cah", "It is Czar " + players.get(czar).nick + "'s turn.");
+        }
+        // If czar is at max index, set to 0. Otherwise, increment
+        czar = (czar == players.size() - 1) ? 0 : czar + 1;
+
+        // Deal black card
+        Card c = blackDeck.remove(0);
+        cah.sendMessage("#cah", c.content);
+
+        // Wait for players to submit cards
+        // TODO
 
     }
 
@@ -145,14 +168,18 @@ public class CAH {
             return;
         }
 
-        if (round == 0) {
-            // No game is in progress, remove immediately with no ill effects
+        if (!gamePrepped) {
+            // No game has been started; therefore you cannot leave the game
+        } else if (round == 0) {
+            // A game has been started but still in joining period
+            // Remove player with no ill effects
             players.remove(p);
-        } else {
+            cah.sendMessage("#cah", p.nick + " has left the game.");
+        }else {
             // Check if there are enough players to continue the game
             if (players.size() < 3) {
                 // Not enough players, end game
-                // TODO
+                endGame();
             }
 
             if (p.isCzar) {
@@ -175,7 +202,25 @@ public class CAH {
             }
         }
         // Onto the next round
-        beginRound();
+        if (round < rounds) {
+            beginRound();
+        } else {
+            // The game is over
+            endGame();
+        }
+    }
+
+    private static void endGame() {
+
+    }
+
+    public static void endGame(Player p) {
+        if (p.isOwner) {
+            endGame();
+            cah.sendMessage("#cah", "The owner " + p.nick + " has ended the game.");
+        } else {
+            cah.sendMessage("#cah", "You may not end the game.");
+        }
     }
 
     public static void startGame(int rounds, Player owner) {
@@ -183,18 +228,34 @@ public class CAH {
         if (!(round == 0)) {
             // Game is already in progress
             cah.sendMessage("#cah", "There is already a game in progress.");
+            return;
         }
 
         if (!(rounds >= ROUND_LIMIT_MIN && rounds <= ROUND_LIMIT_MAX)) {
             // Invalid rounds
             cah.sendMessage("#cah", "Number of rounds must range from " + ROUND_LIMIT_MIN + " to " + ROUND_LIMIT_MAX + ".");
+            return;
         }
-
-
 
         owner.isOwner = true;
         addPlayer(owner);
         CAH.owner = owner;
+        CAH.rounds = rounds;
+
+        // Wait for players to join
+        gamePrepped = true;
+
+        //beginRound();
+    }
+
+    public static void begin(Player p) {
+        if (p.isOwner) {
+            beginRound();
+            gamePrepped = false;
+            cah.sendMessage("#cah", "The game has started!");
+        } else {
+            cah.sendMessage("#cah", "You cannot start the game because you are not the owner.");
+        }
     }
 
 }

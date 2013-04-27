@@ -27,9 +27,14 @@ public class Handler {
                 case ".cah":
                     CAH.startGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
                     break;
+                case ".start":
+                    CAH.begin(CAH.lookupPlayer(nick));
+                    break;
+                case ".end":
+                    CAH.endGame(CAH.lookupPlayer(nick));
+                    break;
             }
         }
 
     }
-
 }

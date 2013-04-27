@@ -13,7 +13,7 @@ public class Main extends Core {
         //setVerbose(true);
         setVersion("Cards Against Humanity ALPHA");
         setNick("Humanity_Bot");
-        setName("cah");
+        setName("tempest");
         connect("frogbox.es", 6667);
     }
 
