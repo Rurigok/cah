@@ -141,8 +141,6 @@ public class CAH {
             players.get(czar).isCzar = true;
             cah.sendMessage("#cah", "It is Czar " + players.get(czar).nick + "'s turn.");
         }
-        // If czar is at max index, set to 0. Otherwise, increment
-        czar = (czar == players.size() - 1) ? 0 : czar + 1;
 
         // Deal black card
         if (blackDeck.isEmpty()) {
@@ -166,24 +164,29 @@ public class CAH {
         // Show white cards to players
         String cards = "";
         for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
             // Show them the black card in PM
-            cah.sendMessage(players.get(i).nick, activeCard.content);
-            for (int j = 0; j < players.get(i).hand.size(); j++) {
-                if (!players.get(i).isCzar) {
+            if (!p.isCzar) {
+                cah.sendMessage(p.nick, activeCard.content);
+            }
+            for (int j = 0; j < p.hand.size(); j++) {
+                if (!p.isCzar) {
                     // If message goes over 450, print the cards gotten thus far
-                    if (cards.length() > 450) {
-                        cah.sendMessage(players.get(i).nick, cards);
+                    if (cards.length() > 300) {
+                        cah.sendMessage(p.nick, cards);
                         cards = "";
                     }
-                    cards += (j + 1) + ": [" + players.get(i).hand.get(j).content + "] ";
+                    cards += (j + 1) + ": [" + p.hand.get(j).content + "] ";
                 }
             }
             // Do not show cards to czar
-            if (players.get(i).isCzar) {
-                cah.sendMessage(players.get(i).nick, "You are the czar this round!");
+            if (p.isCzar) {
+                cah.sendMessage(p.nick, "You are the czar this round!");
             } else {
-                // Show remaining cards to each player
-                cah.sendMessage(players.get(i).nick, cards);
+                // Show remaining cards to the player
+                cah.sendMessage(p.nick, cards);
+                cards = "";
+                p.awaitingSubmit = true;
             }
         }
 
@@ -207,7 +210,7 @@ public class CAH {
             // index of player who won
             Player w = players.get(card - 1);
             w.score++;
-            cah.sendMessage("#cah", w.nick + " has won this round. Current score: " + w);
+            cah.sendMessage("#cah", w.nick + " has won this round. Current score: " + w.score);
             roundTransistion();
         }
     }
@@ -222,6 +225,7 @@ public class CAH {
         if (p.awaitingSubmit) {
             p.playedCardIndex = card - 1;
             p.awaitingSubmit = false;
+            cah.sendMessage(p.nick, "Card submitted: [" + p.hand.get(p.playedCardIndex).content + "]");
         } else {
             cah.sendMessage(p.nick, "You cannot submit a card at this time!");
         }
@@ -231,13 +235,23 @@ public class CAH {
                 return;
             }
         }
-        // If we're here, everyone has submitted! Display picks and begin czar picking
+
+        // If we're here, everyone has submitted. Display picks and begin czar picking
+        displayCards();
+
+    }
+
+    public static void displayCards() {
         String cards = "";
         for (int i = 0; i < players.size(); i++) {
-            cards += "[" + (i + 1) + " : " + players.get(i).hand.get(players.get(i).playedCardIndex).content + "] ";
+            // Do not display card if player is czar
+            if (!players.get(i).isCzar) {
+                cards += "[" + (i + 1) + " : " + players.get(i).hand.get(players.get(i).playedCardIndex).content + "] ";
+            }
         }
         cah.sendMessage("#cah", "Black card: [" + activeCard.content + "]");
         cah.sendMessage("#cah", cards);
+        cah.sendMessage("#cah", "Choose a card, Czar " + players.get(czar).nick + ".");
         pickingCard = true;
     }
 
@@ -294,6 +308,10 @@ public class CAH {
                 players.add(p);
             }
         }
+
+        // Onto the next czar
+        czar = (czar == players.size() - 1) ? 0 : czar + 1;
+
         // Onto the next round
         if (round < rounds) {
             beginRound();
@@ -347,9 +365,9 @@ public class CAH {
             return;
         }
         if (p.isOwner) {
-            beginRound();
-            gamePrepped = false;
             cah.sendMessage("#cah", "The game has started!");
+            gamePrepped = false;
+            beginRound();
         } else {
             cah.sendMessage("#cah", "You cannot start the game because you are not the owner.");
         }
