@@ -133,6 +133,10 @@ public class Core {
         setMode(channel, "+b", new String[]{nick});
     }
 
+    public void setDelay(int ms) {
+        out.delay = ms;
+    }
+
     public void setMode(String channel, String mode, String[] args) {
         String arguments = "";
         for (String s : args) {
