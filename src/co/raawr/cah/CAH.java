@@ -203,7 +203,6 @@ public class CAH {
     public static void czarPickCard(Player p, int card) {
         // Make sure player is actually in game
         if (p == null) {
-            cah.sendNotice(p.nick, "You are not currently in the game!");
             return;
         }
         // Make sure the player is actually the czar
@@ -239,6 +238,7 @@ public class CAH {
             }
         } else {
             cah.sendMessage(p.nick, "You cannot submit a card at this time!");
+            return;
         }
         // Now check if all players have submitted
         for (Player pl : players) {
@@ -341,7 +341,9 @@ public class CAH {
 
         // Remove player's played cards
         for (Player p : players) {
-            p.removePlayedCard();
+            if (!p.isCzar) {
+                p.removePlayedCard();
+            }
         }
 
         // Make sure the czar isn't the czar anymore
@@ -360,6 +362,7 @@ public class CAH {
     }
 
     private static void endGame() {
+        cah.sendMessage("#cah", "The game is over!");
         // Declare winners, obviously
         declareWinners();
 
