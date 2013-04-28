@@ -10,8 +10,6 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.awt.event.*;
-import javax.swing.Timer;
 
 public class CAH {
 
@@ -493,8 +491,6 @@ public class CAH {
             return;
         }
 
-        // Start timer
-
         //CAH.owner = owner;
         CAH.rounds = rounds;
 
@@ -520,5 +516,4 @@ public class CAH {
             cah.sendMessage("#cah", "You cannot start the game because you are not the owner.");
         }
     }
-}
 }
