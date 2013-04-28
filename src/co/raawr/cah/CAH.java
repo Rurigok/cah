@@ -211,13 +211,14 @@ public class CAH {
         }
         // They are the czar, check if ready to pick a card
         if (pickingCard) {
+            if (card > 0 && card < playersTemp.size()) {
+                Player w = playersTemp.get(card - 1);
 
-            Player w = playersTemp.get(card - 1);
-
-            w.score++;
-            cah.sendMessage("#cah", w.nick + " has won this round. Current score: " + w.score);
-            pickingCard = false;
-            roundTransistion();
+                w.score++;
+                cah.sendMessage("#cah", w.nick + " has won this round. Current score: " + w.score);
+                pickingCard = false;
+                roundTransistion();
+            }
         }
     }
 
