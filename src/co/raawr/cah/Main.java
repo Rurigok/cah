@@ -44,7 +44,7 @@ public class Main extends Core {
 
     @Override
     public void onPrivateMessage(String nick, String message) {
-        parseMessage(nick, nick, message);
+        parseMessage(nick, getNick(), message);
     }
 
     private void parseMessage(String nick, String channel, String message) {
