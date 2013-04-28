@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +21,7 @@ public class CAH {
     private static final int PLAYER_HAND_MAX = 10;
     // Player and card handling lists
     private static ArrayList<Player> players = new ArrayList<>();
+    private static ArrayList<Player> playersTemp = new ArrayList<>();
     private static PriorityQueue<Player> playerQueue = new PriorityQueue<>();
     // Black cards are questions, bot shows these
     private static ArrayList<Card> blackDeck = new ArrayList<>();
@@ -202,13 +205,13 @@ public class CAH {
         }
         // Make sure the player is actually the czar
         if (!p.isCzar) {
-            cah.sendNotice(p.nick, "You are not the czar!");
             return;
         }
         // They are the czar, check if ready to pick a card
         if (pickingCard) {
-            // index of player who won
-            Player w = players.get(card - 1);
+
+            Player w = playersTemp.get(card - 1);
+
             w.score++;
             cah.sendMessage("#cah", w.nick + " has won this round. Current score: " + w.score);
             roundTransistion();
@@ -242,17 +245,32 @@ public class CAH {
     }
 
     public static void displayCards() {
+
         String cards = "";
+        HashMap<Player, Card> czarHand = new HashMap<>();
+
+        // Get each player's card and add it to hashmap (other than czar's)
         for (int i = 0; i < players.size(); i++) {
-            // Do not display card if player is czar
-            if (!players.get(i).isCzar) {
-                cards += "[" + (i + 1) + " : " + players.get(i).hand.get(players.get(i).playedCardIndex).content + "] ";
+            Player p = players.get(i);
+            if (!p.isCzar) {
+                czarHand.put(p, p.getPlayedCard());
             }
+        }
+
+        // Randomize the order in which the player's cards appear
+        playersTemp.addAll(czarHand.keySet());
+        Collections.shuffle(playersTemp);
+
+        // Display
+        for (int i = 0; i < playersTemp.size(); i++) {
+            Card c = czarHand.get(playersTemp.get(i));
+            cards += "[" + (i + 1) + " : " + c.content + "] ";
         }
         cah.sendMessage("#cah", "Black card: [" + activeCard.content + "]");
         cah.sendMessage("#cah", cards);
         cah.sendMessage("#cah", "Choose a card, Czar " + players.get(czar).nick + ".");
         pickingCard = true;
+        // Wait on czar to pick card
     }
 
     public static Player createPlayer(String nick) {
@@ -276,7 +294,7 @@ public class CAH {
             return;
         }
 
-        if (!gamePrepped) {
+        if (!gamePrepped && round == 0) {
             // No game has been started; therefore you cannot leave the game
         } else if (round == 0) {
             // A game has been started but still in joining period
@@ -293,10 +311,9 @@ public class CAH {
             if (p.isCzar) {
                 // Player was the czar, restart round
                 // TODO
-            } else {
-                // Remove player and add his cards into the deck
-                // TODO
             }
+            // Remove player and add his cards into the deck
+            // TODO
 
         }
     }
@@ -308,6 +325,12 @@ public class CAH {
                 players.add(p);
             }
         }
+
+        // Clean out the player-hand list
+        playersTemp.clear();
+
+        // Make sure the czar isn't the czar anymore
+        players.get(czar).isCzar = false;
 
         // Onto the next czar
         czar = (czar == players.size() - 1) ? 0 : czar + 1;
