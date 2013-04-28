@@ -18,7 +18,7 @@ public class Out extends Thread {
     Core core;
     BufferedWriter out;
     Queue<String> queue = new LinkedList<>();
-    private volatile int delay = 100;
+    volatile int delay = 100;
 
     public Out(Socket s, Core c) {
         try {
