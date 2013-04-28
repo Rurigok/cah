@@ -6,18 +6,18 @@ import java.util.logging.Logger;
 
 public class Main extends Core {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Main cah = new Main();
     }
 
-    public Main() {
+    public Main() throws Exception {
         initializeGame();
         //setVerbose(true);
-        setDelay(500);
         setVersion("Cards Against Humanity ALPHA");
         setNick("Humanity_Bot");
         setName("tempest");
         connect("frogbox.es", 6667);
+        setDelay(500);
     }
 
     private void initializeGame() {
