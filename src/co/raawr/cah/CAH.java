@@ -120,7 +120,7 @@ public class CAH {
             // A game has been prepped and not started
             players.add(p);
             cah.sendMessage("#cah", p.nick + " has joined the game.");
-        } else if (!gamePrepped) {
+        } else if (!gamePrepped && round == 0) {
             // A game has not been prepped yet
             cah.sendMessage("#cah", "A game has not been started yet! Use .cah [rounds] to start one.");
         } else {
