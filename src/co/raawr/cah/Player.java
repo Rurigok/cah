@@ -23,4 +23,8 @@ public class Player {
     public Card getPlayedCard() {
         return hand.get(playedCardIndex);
     }
+
+    public void removePlayedCard() {
+        hand.remove(playedCardIndex);
+    }
 }
