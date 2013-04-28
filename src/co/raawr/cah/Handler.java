@@ -25,8 +25,10 @@ public class Handler {
                     CAH.removePlayer(CAH.lookupPlayer(nick));
                     break;
                 case ".cah":
-                    if (isInteger(parse[1])) {
-                        CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
+                    if (parse.length > 1) {
+                        if (isInteger(parse[1])) {
+                            CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
+                        }
                     }
                     break;
                 case ".start":
@@ -42,6 +44,8 @@ public class Handler {
                 case ".scan":
                 case ".rescan":
                     //CAH.rescanCards();
+                    break;
+                case ".remove":
                     break;
             }
         } else if (isInteger(command)) {
@@ -73,5 +77,4 @@ public class Handler {
             return false;
         }
     }
-
 }
