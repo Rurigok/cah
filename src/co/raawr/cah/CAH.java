@@ -7,7 +7,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -183,7 +186,7 @@ public class CAH {
         // Show white cards to players
         String cards = "";
         for (int i = 0; i < players.size(); i++) {
-            Player p = players.get(i);
+            final Player p = players.get(i);
             // Show them the black card in PM
             cah.sendMessage(p.nick, "[Round " + round + "]");
             if (!p.isCzar) {
@@ -207,6 +210,18 @@ public class CAH {
                 cah.sendMessage(p.nick, cards);
                 cards = "";
                 p.awaitingSubmit = true;
+
+                // Start their idle timer
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        // Player idle, pick their card randomly
+                        pickCard(p, new Random().nextInt(10) + 1);
+                        p.idleCount++;
+                    }
+                }, 90000);
+
             }
         }
 
@@ -294,7 +309,17 @@ public class CAH {
         cah.sendMessage("#cah", cards);
         cah.sendMessage("#cah", "Choose a card, Czar " + players.get(czar).nick + ".");
         pickingCard = true;
-        // Wait on czar to pick card
+
+        // Start a timer for the czar
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // Player idle, pick their card randomly
+                czarPickCard(players.get(czar), playersTemp.size());
+                players.get(czar).idleCount++;
+            }
+        }, 90000);
     }
 
     public static Player createPlayer(String nick) {
@@ -540,7 +565,7 @@ public class CAH {
         }
 
         if (round > 1) {
-            cah.sendMessage("#cah", p.nick + ", your score is " +  p.score + ".");
+            cah.sendMessage("#cah", p.nick + ", your score is " + p.score + ".");
         }
 
     }
