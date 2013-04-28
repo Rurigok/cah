@@ -39,6 +39,10 @@ public class Handler {
                 case ".sudo":
                     //sudo(nick, parse[1], channel, parse[2]);
                     break;
+                case ".scan":
+                case ".rescan":
+                    //CAH.rescanCards();
+                    break;
             }
         } else if (isInteger(command)) {
             // It's the czar picking a card
