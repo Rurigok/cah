@@ -12,6 +12,7 @@ public class Player {
     public String nick;
     public int score = 0;
     public int playedCardIndex = 0;
+    public int idleCount = 0;
 
     public Player(String nick) {
         this.nick = nick;
