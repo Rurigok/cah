@@ -222,7 +222,7 @@ public class Core {
                     handleJoin(mask, line);
                     break;
                 case "PART":
-                    //TODO
+                    handlePart(mask, line);
                     break;
                 default:
                     //Unhandled command
@@ -317,6 +317,10 @@ public class Core {
         }
     }
 
+    public void onPart(String nick, String channel, String message) {
+
+    }
+
     public void onChannelUserMode(String sourceNick, String channel, String mode, String target) {
     }
 
@@ -368,6 +372,12 @@ public class Core {
     private void handleJoin(String hostmask, String line) {
         String[] parse = line.split(" ");
         onJoin(getNick(hostmask), parse[2].replaceFirst(":", ""));
+    }
+
+    private void handlePart(String hostmask, String line) {
+        String[] parse = line.split(" ");
+        String reason = parse.length == 4 ? line.substring(line.indexOf(":")) : "" ;
+        onPart(getNick(hostmask), parse[2], reason);
     }
 
     public void onJoin(String nick, String channel) {
