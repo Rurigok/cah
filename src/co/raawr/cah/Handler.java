@@ -16,37 +16,45 @@ public class Handler {
 
         if (command.startsWith(".")) {
             // It's a command - handle it
-            switch (command) {
-                case ".join":
-                    CAH.addPlayer(CAH.createPlayer(nick));
-                    break;
-                case ".leave":
-                case ".quit":
-                    CAH.removePlayer(CAH.lookupPlayer(nick));
-                    break;
-                case ".cah":
-                    if (parse.length > 1) {
-                        if (isInteger(parse[1])) {
-                            CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
+            if (channel == "#cah") {
+                switch (command) {
+                    case ".join":
+                        CAH.addPlayer(CAH.createPlayer(nick));
+                        break;
+                    case ".leave":
+                    case ".quit":
+                        CAH.removePlayer(CAH.lookupPlayer(nick));
+                        break;
+                    case ".cah":
+                        if (parse.length > 1) {
+                            if (isInteger(parse[1])) {
+                                CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
+                            }
                         }
+                        break;
+                    case ".start":
+                        CAH.begin(CAH.lookupPlayer(nick));
+                        break;
+                    case ".end":
+                    case ".stop":
+                        CAH.endGame(CAH.lookupPlayer(nick));
+                        break;
+                    case ".sudo":
+                        //sudo(nick, parse[1], channel, parse[2]);
+                        break;
+                    case ".scan":
+                    case ".rescan":
+                        //CAH.rescanCards();
+                        break;
+                    case ".remove":
+                        break;
+                }
+            } else if (channel == "#coldstorm" && command == ".cah") {
+                if (parse.length > 1) {
+                    if (isInteger(parse[1])) {
+                        CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
                     }
-                    break;
-                case ".start":
-                    CAH.begin(CAH.lookupPlayer(nick));
-                    break;
-                case ".end":
-                case ".stop":
-                    CAH.endGame(CAH.lookupPlayer(nick));
-                    break;
-                case ".sudo":
-                    //sudo(nick, parse[1], channel, parse[2]);
-                    break;
-                case ".scan":
-                case ".rescan":
-                    //CAH.rescanCards();
-                    break;
-                case ".remove":
-                    break;
+                }
             }
         } else if (isInteger(command)) {
             // It's the czar picking a card
