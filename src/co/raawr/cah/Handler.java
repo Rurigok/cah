@@ -37,7 +37,8 @@ public class Handler {
                     CAH.endGame(CAH.lookupPlayer(nick));
                     break;
                 case ".sudo":
-                    sudo(nick, parse[1], channel, parse[2]);
+                    //sudo(nick, parse[1], channel, parse[2]);
+                    break;
             }
         } else if (isInteger(command)) {
             // It's the czar picking a card
@@ -49,7 +50,7 @@ public class Handler {
     public static void sudo(String sender, String nick, String channel, String command) {
         if (sender.equals("Rurigok") || sender.equals("Tako")) {
             // Disabled for the time being
-            //handleMessage(nick, channel, command);
+            handleMessage(nick, channel, command);
         }
     }
 
