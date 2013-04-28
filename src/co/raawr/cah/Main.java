@@ -13,6 +13,7 @@ public class Main extends Core {
     public Main() {
         initializeGame();
         //setVerbose(true);
+        setDelay(500);
         setVersion("Cards Against Humanity ALPHA");
         setNick("Humanity_Bot");
         setName("tempest");
