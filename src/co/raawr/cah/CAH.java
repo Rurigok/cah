@@ -5,7 +5,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +22,7 @@ public class CAH {
     // Player and card handling lists
     private static ArrayList<Player> players = new ArrayList<>();
     private static ArrayList<Player> playersTemp = new ArrayList<>();
-    private static PriorityQueue<Player> playerQueue = new PriorityQueue<>();
+    private static Queue<Player> playerQueue = new LinkedList<>();
     // Black cards are questions, bot shows these
     private static ArrayList<Card> blackDeck = new ArrayList<>();
     // White cards are answers, players use these
@@ -122,12 +123,13 @@ public class CAH {
             // A game has been prepped and not started
             players.add(p);
             cah.sendMessage("#cah", p.nick + " has joined the game.");
-        } else if (!gamePrepped && round == 0) {
+        } else if (round == 0) {
             // A game has not been prepped yet
             cah.sendMessage("#cah", "A game has not been started yet! Use .cah [rounds] to start one.");
         } else {
             // Game is in progress, add at next round
             playerQueue.add(p);
+            cah.sendMessage("#cah", "You will be added to the game on the next round.");
         }
 
     }
@@ -215,6 +217,7 @@ public class CAH {
 
             w.score++;
             cah.sendMessage("#cah", w.nick + " has won this round. Current score: " + w.score);
+            pickingCard = false;
             roundTransistion();
         }
     }
@@ -227,9 +230,13 @@ public class CAH {
         }
         // Make sure we're actually waiting for a card from this player
         if (p.awaitingSubmit) {
-            p.playedCardIndex = card - 1;
-            p.awaitingSubmit = false;
-            cah.sendMessage(p.nick, "Card submitted: [" + p.hand.get(p.playedCardIndex).content + "]");
+            if (card > 0 && card < 11) {
+                p.playedCardIndex = card - 1;
+                p.awaitingSubmit = false;
+                cah.sendMessage(p.nick, "Card submitted: [" + p.hand.get(p.playedCardIndex).content + "]");
+            } else {
+                cah.sendMessage(p.nick, "Please choose a card between 1 and 10.");
+            }
         } else {
             cah.sendMessage(p.nick, "You cannot submit a card at this time!");
         }
@@ -241,7 +248,9 @@ public class CAH {
         }
 
         // If we're here, everyone has submitted. Display picks and begin czar picking
-        displayCards();
+        if (!pickingCard) {
+            displayCards();
+        }
 
     }
 
@@ -355,6 +364,7 @@ public class CAH {
         declareWinners();
 
         // Clean up!
+        round = 0;
         rounds = 0;
         players.clear();
         whiteDeck.clear();
@@ -395,7 +405,7 @@ public class CAH {
                 if (i < winners.size() - 2) {
                     w += p.nick + ", ";
                 } else if (i == winners.size() - 2) {
-                    w += p.nick + " and ";
+                    w += p.nick + ", and ";
                 } else if (i == winners.size() - 1) {
                     w += p.nick;
                 }
