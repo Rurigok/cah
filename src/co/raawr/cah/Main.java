@@ -44,6 +44,20 @@ public class Main extends Core {
     }
 
     @Override
+    public void onPart(String nick, String channel, String reason) {
+        if (channel.equals("#cah")) {
+            CAH.removePlayer(CAH.lookupPlayer(nick));
+        }
+    }
+
+    @Override
+    public void onKick(String channel, String sourceNick, String targetNick, String reason) {
+        if (channel.equals("#cah")) {
+            CAH.removePlayer(CAH.lookupPlayer(targetNick));
+        }
+    }
+
+    @Override
     public void onPrivateMessage(String nick, String message) {
         parseMessage(nick, getNick(), message);
     }
