@@ -330,13 +330,6 @@ public class CAH {
     }
 
     public static void roundTransistion() {
-        if (!playerQueue.isEmpty()) {
-            // Add players that are waiting to join
-            for (Player p : playerQueue) {
-                players.add(p);
-            }
-        }
-
         // Clean out the player-hand list
         playersTemp.clear();
 
@@ -352,6 +345,11 @@ public class CAH {
 
         // Onto the next czar
         czar = (czar == players.size() - 1) ? 0 : czar + 1;
+
+        // Add players that are waiting to join
+        while (!playerQueue.isEmpty()) {
+            players.add(playerQueue.poll());
+        }
 
         // Onto the next round
         if (round < rounds) {
