@@ -31,7 +31,6 @@ public class Main extends Core {
             identify("");
             Thread.sleep(1000);
             joinChannel("#cah");
-            joinChannel("#coldstorm");
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
