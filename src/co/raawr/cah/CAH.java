@@ -526,9 +526,22 @@ public class CAH {
         if (p.isOwner) {
             cah.sendMessage("#cah", "The game has started!");
             gamePrepped = false;
+            // The owner will not always be the first czar ;)
+            Collections.shuffle(players);
             beginRound();
         } else {
             cah.sendMessage("#cah", "You cannot start the game because you are not the owner.");
         }
+    }
+
+    public static void getScore(Player p) {
+        if (p == null) {
+            return;
+        }
+
+        if (round > 1) {
+            cah.sendMessage("#cah", p.nick + ", your score is " +  p.score + ".");
+        }
+
     }
 }
