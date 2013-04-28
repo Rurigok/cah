@@ -133,8 +133,12 @@ public class Core {
         setMode(channel, "+b", new String[]{nick});
     }
 
-    public void setDelay(int ms) {
-        out.delay = ms;
+    public void setDelay(int ms) throws Exception {
+        if (isConnected()) {
+            out.delay = ms;
+        } else {
+            throw new Exception("You must connect to a server before delay can be changed.");
+        }
     }
 
     public void setMode(String channel, String mode, String[] args) {
