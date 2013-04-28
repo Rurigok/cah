@@ -17,7 +17,7 @@ public class CAH {
     private static Main cah;
     // Game constants
     private static final int ROUND_LIMIT_MIN = 3;
-    private static final int ROUND_LIMIT_MAX = 10;
+    private static final int ROUND_LIMIT_MAX = 25;
     private static final int PLAYER_HAND_MAX = 10;
     // Player and card handling lists
     private static ArrayList<Player> players = new ArrayList<>();
