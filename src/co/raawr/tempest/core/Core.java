@@ -267,9 +267,14 @@ public class Core {
                     sendNotice(nickname, "\001VERSION " + version + "\001");
                     break;
             }
-        } else if (channel.equals(getNick())) {
+            return;
+        }
+        // It is a normal message, handle it
+        if (channel.equals(getNick())) {
+            // If channel is the same as the nick of the bot, it is a private message
             onPrivateMessage(nickname, message);
         } else {
+            // Otherwise it is a channel message
             onMessage(nickname, channel, message);
         }
 
