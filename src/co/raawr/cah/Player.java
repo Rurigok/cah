@@ -19,4 +19,8 @@ public class Player {
     public void addCard(Card c) {
         hand.add(c);
     }
+
+    public Card getPlayedCard() {
+        return hand.get(playedCardIndex);
+    }
 }
