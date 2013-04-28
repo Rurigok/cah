@@ -8,6 +8,7 @@ public class Player {
     public boolean isCzar = false;
     public boolean isOwner = false;
     public boolean awaitingSubmit = false;
+    public boolean playedCard = false;
     public String nick;
     public int score = 0;
     public int playedCardIndex = 0;
