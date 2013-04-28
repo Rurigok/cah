@@ -493,7 +493,7 @@ public class CAH {
         // Wait for players to join
         gamePrepped = true;
         cah.sendMessage("#cah", owner.nick + " has started a game! Type .join to join.");
-
+        cah.sendMessage("#coldstorm", owner.nick + " has started a game! Join #cah to play.");
         // Designate game owner and add him to game
         owner.isOwner = true;
         addPlayer(owner);
