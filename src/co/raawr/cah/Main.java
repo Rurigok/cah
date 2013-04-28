@@ -28,12 +28,13 @@ public class Main extends Core {
     @Override
     public void onConnection() {
         try {
-            identify("");
+            identify("cahbot7543");
             Thread.sleep(1000);
             joinChannel("#cah");
+            joinChannel("#2");
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       }
     }
 
     @Override
