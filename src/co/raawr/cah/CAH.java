@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -154,7 +153,8 @@ public class CAH {
 
         // Deal white cards to players
         for (int i = 0; i < players.size(); i++) {
-            for (int j = 0; j < PLAYER_HAND_MAX; j++) {
+            int cardsNeeded = PLAYER_HAND_MAX - players.get(i).hand.size();
+            for (int j = 0; j < cardsNeeded; j++) {
                 // Make sure we don't run out of cards
                 if (whiteDeck.isEmpty()) {
                     // We ran out of white cards! Rescan and shuffle
@@ -170,6 +170,7 @@ public class CAH {
             Player p = players.get(i);
             // Show them the black card in PM
             if (!p.isCzar) {
+                cah.sendMessage(p.nick, "[Round " + round + "]");
                 cah.sendMessage(p.nick, activeCard.content);
             }
             for (int j = 0; j < p.hand.size(); j++) {
@@ -261,7 +262,7 @@ public class CAH {
         playersTemp.addAll(czarHand.keySet());
         Collections.shuffle(playersTemp);
 
-        // Display
+        // Display and remove the card from their hand
         for (int i = 0; i < playersTemp.size(); i++) {
             Card c = czarHand.get(playersTemp.get(i));
             cards += "[" + (i + 1) + " : " + c.content + "] ";
@@ -274,7 +275,7 @@ public class CAH {
     }
 
     public static Player createPlayer(String nick) {
-        return new Player(nick);
+        return lookupPlayer(nick) != null ? lookupPlayer(nick) : new Player(nick);
     }
 
     public static Player lookupPlayer(String nick) {
@@ -329,6 +330,11 @@ public class CAH {
         // Clean out the player-hand list
         playersTemp.clear();
 
+        // Remove player's played cards
+        for (Player p : players) {
+            p.removePlayedCard();
+        }
+
         // Make sure the czar isn't the czar anymore
         players.get(czar).isCzar = false;
 
@@ -345,6 +351,58 @@ public class CAH {
     }
 
     private static void endGame() {
+        // Declare winners, obviously
+        declareWinners();
+
+        // Clean up!
+        rounds = 0;
+        players.clear();
+        whiteDeck.clear();
+        addWhiteCards();
+        blackDeck.clear();
+        addBlackCards();
+        playerQueue.clear();
+        czar = 0;
+        activeCard = null;
+        pickingCard = false;
+
+    }
+
+    private static void declareWinners() {
+        int highscore = 0;
+        ArrayList<Player> winners = new ArrayList<>();
+        // First, determine the high score
+        for (Player p : players) {
+            if (p.score > highscore) {
+                highscore = p.score;
+            }
+        }
+        // Now, determine the winners
+        for (Player p : players) {
+            if (p.score == highscore) {
+                winners.add(p);
+            }
+        }
+        // Print the winner(s)
+        String w = "";
+        if (winners.size() == 1) {
+            cah.sendMessage("#cah", winners.get(0).nick + " has won with a score of " + highscore + "!");
+        } else if (winners.size() == 2) {
+            cah.sendMessage("#cah", winners.get(0).nick + " and " + winners.get(1) + " tied for first with a score of " + highscore + "!");
+        } else {
+            for (int i = 0; i < winners.size(); i++) {
+                Player p = winners.get(i);
+                if (i < winners.size() - 2) {
+                    w += p.nick + ", ";
+                } else if (i == winners.size() - 2) {
+                    w += p.nick + " and ";
+                } else if (i == winners.size() - 1) {
+                    w += p.nick;
+                }
+            }
+            w += " tied for first with a score of " + highscore + "!";
+            cah.sendMessage("#cah", w);
+        }
     }
 
     public static void endGame(Player p) {
