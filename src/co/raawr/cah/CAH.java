@@ -130,11 +130,18 @@ public class CAH {
             // A game has been prepped and not started
             players.add(p);
             cah.sendMessage("#cah", p.nick + " has joined the game.");
+            if (players.size() == 3) {
+                cah.sendMessage("#cah", "3 players have joined the game. It may now be started with .start by the owner.");
+            }
         } else if (round == 0) {
             // A game has not been prepped yet
             cah.sendMessage("#cah", "A game has not been started yet! Use .cah [rounds] to start one.");
         } else {
             // Game is in progress, add at next round
+            if (playerQueue.contains(p)) {
+                cah.sendMessage("#cah", "You are already queued to join.");
+                return;
+            }
             playerQueue.add(p);
             cah.sendMessage("#cah", "You will be added to the game on the next round.");
         }
@@ -323,6 +330,14 @@ public class CAH {
                 // Not enough players, end game
                 cah.sendMessage("#cah", "Not enough players.");
                 endGame();
+                return;
+            }
+
+            // They were queued to join, remove them without a second thought
+            if (playerQueue.contains(p)) {
+                cah.sendMessage("#cah", "You are no longer queued to join.");
+                playerQueue.remove(p);
+                return;
             }
 
             if (p.isCzar) {
