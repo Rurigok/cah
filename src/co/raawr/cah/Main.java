@@ -28,7 +28,7 @@ public class Main extends Core {
     @Override
     public void onConnection() {
         try {
-            identify("cahbot7543");
+            identify("");
             Thread.sleep(1000);
             joinChannel("#cah");
         } catch (InterruptedException ex) {
