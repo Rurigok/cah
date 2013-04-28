@@ -35,6 +35,9 @@ public class Handler {
                         CAH.begin(CAH.lookupPlayer(nick));
                         break;
                     case ".end":
+                    case ".score":
+                        CAH.getScore(CAH.lookupPlayer(nick));
+                        break;
                     case ".stop":
                         CAH.endGame(CAH.lookupPlayer(nick));
                         break;
