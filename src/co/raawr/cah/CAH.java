@@ -108,6 +108,13 @@ public class CAH {
         }
     }
 
+    public static void rescanCards() {
+        cah.sendMessage("#cah", "Rescanned cards from files and shuffled.");
+        whiteDeck.clear();
+        blackDeck.clear();
+        addCards();
+    }
+
     public static void addPlayer(Player p) {
 
         if (p == null) {
@@ -171,8 +178,8 @@ public class CAH {
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
             // Show them the black card in PM
+            cah.sendMessage(p.nick, "[Round " + round + "]");
             if (!p.isCzar) {
-                cah.sendMessage(p.nick, "[Round " + round + "]");
                 cah.sendMessage(p.nick, activeCard.content);
             }
             for (int j = 0; j < p.hand.size(); j++) {
@@ -225,7 +232,6 @@ public class CAH {
     public static void pickCard(Player p, int card) {
         // Make sure that player is actually in-game
         if (p == null) {
-            cah.sendMessage(p.nick, "You are not currently in the game!");
             return;
         }
         // Make sure we're actually waiting for a card from this player
@@ -234,6 +240,7 @@ public class CAH {
                 p.playedCardIndex = card - 1;
                 p.awaitingSubmit = false;
                 cah.sendMessage(p.nick, "Card submitted: [" + p.hand.get(p.playedCardIndex).content + "]");
+                p.playedCard = true;
             } else {
                 cah.sendMessage(p.nick, "Please choose a card between 1 and 10.");
             }
@@ -247,7 +254,6 @@ public class CAH {
                 return;
             }
         }
-
         // If we're here, everyone has submitted. Display picks and begin czar picking
         if (!pickingCard) {
             displayCards();
@@ -301,7 +307,6 @@ public class CAH {
 
         if (p == null) {
             // Player was not found
-            cah.sendMessage("#cah", "You are not currently in a game.");
             return;
         }
 
@@ -316,16 +321,49 @@ public class CAH {
             // Check if there are enough players to continue the game
             if (players.size() < 3) {
                 // Not enough players, end game
+                cah.sendMessage("#cah", "Not enough players.");
                 endGame();
             }
 
             if (p.isCzar) {
                 // Player was the czar, restart round
-                // TODO
+                cah.sendMessage("#cah", "The czar has left the game! Restarting this round.");
+                round--;
+                // Cycle czar back by one to compensate
+                czar = czar == 0 ? players.size() - 2 : czar - 1;
+                roundTransistion();
+                // Remove player and add his cards into the deck
+                whiteDeck.addAll(p.hand);
+                players.remove(p);
+            } else {
+                if (p.playedCard && pickingCard) {
+                    // They left while the czar was picking, you have got to be fucking kidding me
+                    // Remove them and their card and redisplay
+                    cah.sendMessage("#cah", p.nick + " has left the game.");
+                    whiteDeck.addAll(p.hand);
+                    players.remove(p);
+                    cah.sendMessage("#cah", "Redisplaying cards...");
+                    displayCards();
+                } else if (p.playedCard) {
+                    // They left after they submitted a card but the czar wasn't picking yet
+                    cah.sendMessage("#cah", p.nick + " has left the game.");
+                    whiteDeck.addAll(p.hand);
+                    players.remove(p);
+                } else if (p.awaitingSubmit) {
+                    // They left before they submitted a card
+                    cah.sendMessage("#cah", p.nick + " has left the game.");
+                    whiteDeck.addAll(p.hand);
+                    players.remove(p);
+                    for (Player pl : players) {
+                        if (!pl.isCzar && pl.awaitingSubmit) {
+                            return;
+                        }
+                    }
+                    if (!pickingCard) {
+                        displayCards();
+                    }
+                }
             }
-            // Remove player and add his cards into the deck
-            // TODO
-
         }
     }
 
@@ -335,8 +373,9 @@ public class CAH {
 
         // Remove player's played cards
         for (Player p : players) {
-            if (!p.isCzar) {
+            if (!p.isCzar && p.playedCard) {
                 p.removePlayedCard();
+                p.playedCard = false;
             }
         }
 
@@ -400,7 +439,7 @@ public class CAH {
         if (winners.size() == 1) {
             cah.sendMessage("#cah", winners.get(0).nick + " has won with a score of " + highscore + "!");
         } else if (winners.size() == 2) {
-            cah.sendMessage("#cah", winners.get(0).nick + " and " + winners.get(1) + " tied for first with a score of " + highscore + "!");
+            cah.sendMessage("#cah", winners.get(0).nick + " and " + winners.get(1).nick + " tied for first with a score of " + highscore + "!");
         } else {
             for (int i = 0; i < winners.size(); i++) {
                 Player p = winners.get(i);
@@ -418,6 +457,9 @@ public class CAH {
     }
 
     public static void endGame(Player p) {
+        if (p == null) {
+            return;
+        }
         if (p.isOwner) {
             endGame();
             cah.sendMessage("#cah", "The owner " + p.nick + " has ended the game.");
@@ -431,6 +473,11 @@ public class CAH {
         if (!(round == 0)) {
             // Game is already in progress
             cah.sendMessage("#cah", "There is already a game in progress.");
+            return;
+        }
+
+        if (gamePrepped) {
+            cah.sendMessage("#cah", "A game has already been created.");
             return;
         }
 
