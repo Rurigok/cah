@@ -401,8 +401,11 @@ public class CAH {
 
     private static void endGame() {
         cah.sendMessage("#cah", "The game is over!");
-        // Declare winners, obviously
-        declareWinners();
+        if (round != 0) {
+            // Declare winners, obviously
+            declareWinners();
+        }
+
 
         // Clean up!
         round = 0;
@@ -416,6 +419,7 @@ public class CAH {
         czar = 0;
         activeCard = null;
         pickingCard = false;
+        gamePrepped = false;
 
     }
 
@@ -461,8 +465,8 @@ public class CAH {
             return;
         }
         if (p.isOwner) {
-            endGame();
             cah.sendMessage("#cah", "The owner " + p.nick + " has ended the game.");
+            endGame();
         } else {
             cah.sendMessage("#cah", "You may not end the game.");
         }
@@ -493,7 +497,7 @@ public class CAH {
         // Wait for players to join
         gamePrepped = true;
         cah.sendMessage("#cah", owner.nick + " has started a game! Type .join to join.");
-
+        cah.sendMessage("#2", owner.nick + " has started a game! Join #cah to join.");
         // Designate game owner and add him to game
         owner.isOwner = true;
         addPlayer(owner);

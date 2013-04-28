@@ -15,8 +15,14 @@ public class Handler {
         String command = parse[0].toLowerCase();
 
         if (command.startsWith(".")) {
-            // It's a command - handle it
-            if (channel == "#cah") {
+            if (command.equals(".cah")) {
+                if (parse.length > 1) {
+                    if (isInteger(parse[1])) {
+                        CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
+                    }
+                }
+            } else if (channel.equals("#cah")) {
+                // It's a command - handle it
                 switch (command) {
                     case ".join":
                         CAH.addPlayer(CAH.createPlayer(nick));
@@ -24,13 +30,6 @@ public class Handler {
                     case ".leave":
                     case ".quit":
                         CAH.removePlayer(CAH.lookupPlayer(nick));
-                        break;
-                    case ".cah":
-                        if (parse.length > 1) {
-                            if (isInteger(parse[1])) {
-                                CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
-                            }
-                        }
                         break;
                     case ".start":
                         CAH.begin(CAH.lookupPlayer(nick));
@@ -48,12 +47,8 @@ public class Handler {
                         break;
                     case ".remove":
                         break;
-                }
-            } else if (channel == "#coldstorm" && command == ".cah") {
-                if (parse.length > 1) {
-                    if (isInteger(parse[1])) {
-                        CAH.prepGame(Integer.parseInt(parse[1]), CAH.createPlayer(nick));
-                    }
+                    default:
+                        break;
                 }
             }
         } else if (isInteger(command)) {

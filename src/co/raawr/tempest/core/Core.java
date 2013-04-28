@@ -267,7 +267,7 @@ public class Core {
                     sendNotice(nickname, "\001VERSION " + version + "\001");
                     break;
             }
-        } else if (!channel.equals(getNick())) {
+        } else if (channel.equals(getNick())) {
             onPrivateMessage(nickname, message);
         } else {
             onMessage(nickname, channel, message);
