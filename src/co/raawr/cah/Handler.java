@@ -12,6 +12,10 @@ public class Handler {
 
         String[] parse = message.split(" ");
 
+        if (parse.length == 0) {
+            return;
+        }
+
         String command = parse[0].toLowerCase();
 
         if (command.startsWith(".")) {
