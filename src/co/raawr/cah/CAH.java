@@ -215,6 +215,7 @@ public class CAH {
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     int roundCheck = round;
+
                     @Override
                     public void run() {
                         // Player idle, pick their card randomly
@@ -319,6 +320,7 @@ public class CAH {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             int roundCheck = round;
+
             @Override
             public void run() {
                 // Player idle, pick their card randomly
@@ -371,6 +373,10 @@ public class CAH {
             // Remove player with no ill effects
             players.remove(p);
             cah.sendMessage("#cah", p.nick + " has left the game.");
+            if (players.isEmpty()) {
+                cah.sendMessage("#cah", "Not enough players.");
+                endGame();
+            }
         } else {
             // Check if there are enough players to continue the game
             if (players.size() < 3) {
@@ -537,7 +543,7 @@ public class CAH {
         }
     }
 
-    public static void prepGame(int rounds, Player owner) {
+    public static void prepGame(int rounds, final Player owner) {
 
         if (!(round == 0)) {
             // Game is already in progress
@@ -566,6 +572,22 @@ public class CAH {
         // Designate game owner and add him to game
         owner.isOwner = true;
         addPlayer(owner);
+        //
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            int roundCheck = round;
+            Player o = owner;
+
+            @Override
+            public void run() {
+                // Game joining over
+                if (gamePrepped && round == 0 && o == owner) {
+                    cah.sendMessage("#cah", "No game has been started - ending this game.");
+                    endGame();
+                }
+                cancel();
+            }
+        }, 120000);
     }
 
     public static void begin(Player p) {
