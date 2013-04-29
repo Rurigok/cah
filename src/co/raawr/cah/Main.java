@@ -17,7 +17,7 @@ public class Main extends Core {
         setNick("Humanity_Bot");
         setName("tempest");
         connect("frogbox.es", 6667);
-        setDelay(500);
+        setDelay(200);
     }
 
     private void initializeGame() {
@@ -32,7 +32,7 @@ public class Main extends Core {
             identify("cahbot7543");
             Thread.sleep(1000);
             joinChannel("#cah");
-            joinChannel("#2");
+            joinChannel("#coldstorm");
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
        }
