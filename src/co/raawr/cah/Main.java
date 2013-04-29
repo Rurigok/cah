@@ -58,6 +58,11 @@ public class Main extends Core {
     }
 
     @Override
+    public void onQuit(String nick, String reason) {
+        CAH.removePlayer(CAH.lookupPlayer(nick));
+    }
+
+    @Override
     public void onPrivateMessage(String nick, String message) {
         parseMessage(nick, getNick(), message);
     }
