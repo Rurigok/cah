@@ -214,11 +214,16 @@ public class CAH {
                 // Start their idle timer
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
+                    int roundCheck = round;
                     @Override
                     public void run() {
                         // Player idle, pick their card randomly
-                        pickCard(p, new Random().nextInt(10) + 1);
-                        p.idleCount++;
+                        if (p.awaitingSubmit && roundCheck == round) {
+                            pickCard(p, new Random().nextInt(10) + 1);
+                            cah.sendMessage("#cah", p.nick + " is idle! A card has been submitted for them at random.");
+                            p.idleCount++;
+                        }
+                        cancel();
                     }
                 }, 90000);
 
@@ -313,13 +318,30 @@ public class CAH {
         // Start a timer for the czar
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
+            int roundCheck = round;
             @Override
             public void run() {
                 // Player idle, pick their card randomly
-                czarPickCard(players.get(czar), playersTemp.size());
-                players.get(czar).idleCount++;
+                if (pickingCard && roundCheck == round) {
+                    int r = new Random().nextInt(playersTemp.size());
+                    cah.sendMessage("#cah", "Czar " + players.get(czar).nick + " is idle! Card " + r + " was chosen at random.");
+                    players.get(czar).idleCount++;
+                    czarPickCard(players.get(czar), r + 1);
+                }
+                cancel();
             }
         }, 90000);
+    }
+
+    public static void kickPlayer(Player p, Player target) {
+        if (p == null || target == null) {
+            return;
+        }
+
+        if (p.isOwner) {
+            removePlayer(target);
+            cah.sendMessage("#cah", p.nick + " has removed " + target.nick + " from the game.");
+        }
     }
 
     public static Player createPlayer(String nick) {
@@ -370,7 +392,7 @@ public class CAH {
                 cah.sendMessage("#cah", "The czar has left the game! Restarting this round.");
                 round--;
                 // Cycle czar back by one to compensate
-                czar = czar == 0 ? players.size() - 2 : czar - 1;
+                czar = czar == players.size() - 1 ? czar = -1 : czar - 1;
                 roundTransistion();
                 // Remove player and add his cards into the deck
                 whiteDeck.addAll(p.hand);
@@ -420,7 +442,10 @@ public class CAH {
         }
 
         // Make sure the czar isn't the czar anymore
-        players.get(czar).isCzar = false;
+        // If czar is -1, ignore
+        if (!(czar < 0)) {
+            players.get(czar).isCzar = false;
+        }
 
         // Onto the next czar
         czar = (czar == players.size() - 1) ? 0 : czar + 1;
@@ -537,7 +562,7 @@ public class CAH {
         // Wait for players to join
         gamePrepped = true;
         cah.sendMessage("#cah", owner.nick + " has started a game! Type .join to join.");
-        cah.sendMessage("#2", owner.nick + " has started a game! Join #cah to join.");
+        cah.sendMessage("#coldstorm", owner.nick + " has started a game! Join #cah to join.");
         // Designate game owner and add him to game
         owner.isOwner = true;
         addPlayer(owner);
