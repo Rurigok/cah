@@ -35,6 +35,8 @@ public class Handler {
                         CAH.begin(CAH.lookupPlayer(nick));
                         break;
                     case ".end":
+                        CAH.endGame(CAH.lookupPlayer(nick));
+                        break;
                     case ".score":
                         CAH.getScore(CAH.lookupPlayer(nick));
                         break;
@@ -49,6 +51,10 @@ public class Handler {
                         //CAH.rescanCards();
                         break;
                     case ".remove":
+                    case ".kick":
+                        if (parse.length == 2) {
+                            CAH.kickPlayer(CAH.lookupPlayer(nick), CAH.lookupPlayer(parse[1]));
+                        }
                         break;
                     default:
                         break;
