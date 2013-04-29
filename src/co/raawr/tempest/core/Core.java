@@ -228,6 +228,9 @@ public class Core {
                 case "PART":
                     handlePart(mask, line);
                     break;
+                case "QUIT":
+                    handleQuit(mask, line);
+                    break;
                 default:
                     //Unhandled command
                     break;
@@ -327,7 +330,6 @@ public class Core {
     }
 
     public void onPart(String nick, String channel, String message) {
-
     }
 
     public void onChannelUserMode(String sourceNick, String channel, String mode, String target) {
@@ -389,6 +391,15 @@ public class Core {
         onPart(getNick(hostmask), parse[2], reason);
     }
 
+    private void handleQuit(String hostmask, String line) {
+        String[] parse = line.split(" ");
+        String reason = "";
+        if (line.contains(":")) {
+            reason = line.substring(line.indexOf(":"));
+        }
+        onQuit(getNick(hostmask), reason);
+    }
+
     public void onJoin(String nick, String channel) {
     }
 
@@ -411,5 +422,8 @@ public class Core {
             reason = line.substring(line.indexOf(":", 1) + 1);
         }
         onKick(channel, nick, target, reason);
+    }
+
+    public void onQuit(String nick, String message) {
     }
 }
