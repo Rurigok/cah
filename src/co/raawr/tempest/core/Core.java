@@ -134,11 +134,7 @@ public class Core {
     }
 
     public void setDelay(int ms) throws Exception {
-        if (isConnected()) {
-            out.delay = ms;
-        } else {
-            throw new Exception("You must connect to a server before delay can be changed.");
-        }
+        out.delay = ms;
     }
 
     public void setMode(String channel, String mode, String[] args) {
