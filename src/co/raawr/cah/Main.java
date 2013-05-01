@@ -17,7 +17,7 @@ public class Main extends Core {
         setNick("Humanity_Bot");
         setName("tempest");
         connect("frogbox.es", 6667);
-        setDelay(200);
+        //setDelay(200);
     }
 
     private void initializeGame() {
