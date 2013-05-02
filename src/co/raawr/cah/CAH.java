@@ -371,6 +371,10 @@ public class CAH {
         } else if (round == 0) {
             // A game has been started but still in joining period
             // Remove player with no ill effects
+            if (p.isOwner) {
+                cah.sendMessage("#cah", "The owner may not leave the game in the joining period.");
+                return;
+            }
             players.remove(p);
             cah.sendMessage("#cah", p.nick + " has left the game.");
             if (players.isEmpty()) {
