@@ -12,10 +12,9 @@ public class Main extends Core {
 
     public Main() throws Exception {
         initializeGame();
-        //setVerbose(true);
-        setVersion("Cards Against Humanity ALPHA");
+        setVersion("Cards Against Humanity v1.0");
         setNick("Humanity_Bot");
-        setName("tempest");
+        setName("911BE0QQ");
         connect("frogbox.es", 6667);
         //setDelay(200);
     }
@@ -31,8 +30,7 @@ public class Main extends Core {
         try {
             identify("cahbot7543");
             Thread.sleep(1000);
-            joinChannel("#cah");
-            joinChannel("#coldstorm");
+            joinChannels(new String[]{"#cah", "#coldstorm"});
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
        }
