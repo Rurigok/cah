@@ -256,6 +256,14 @@ public class Core {
         print("Joined channel successfully.");
     }
 
+    public void joinChannels(String[] channels) {
+        for (String channel : channels) {
+            if (channel.startsWith("#")) {
+                joinChannel(channel);
+            }
+        }
+    }
+
     public void onPing(String server) {
         out.queueLine("PONG " + server);
     }
@@ -320,7 +328,7 @@ public class Core {
                     plus = false;
                     break;
                 default:
-                    if (parse.length >= mc + 3) {
+                    if (parse.length > mc + 3) {
                         onChannelUserMode(nickname, channel, (plus ? "+" : "-") + c, parse[mc + 3]);
                         mc++;
                     }
