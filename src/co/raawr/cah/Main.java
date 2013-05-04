@@ -20,6 +20,7 @@ public class Main extends Core {
     }
 
     private void initializeGame() {
+        Console.init(this);
         Handler.init(this);
         CAH.init(this);
         CAH.addCards();
@@ -30,10 +31,10 @@ public class Main extends Core {
         try {
             identify("cahbot7543");
             Thread.sleep(1000);
-            joinChannels(new String[]{"#cah", "#coldstorm"});
+            joinChannels(new String[]{"#cah"});
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-       }
+        }
     }
 
     @Override

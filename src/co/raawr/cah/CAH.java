@@ -481,16 +481,15 @@ public class CAH {
             declareWinners();
         }
 
-
         // Clean up!
         round = 0;
         rounds = 0;
         players.clear();
-        whiteDeck.clear();
-        addWhiteCards();
-        blackDeck.clear();
-        addBlackCards();
+        playersTemp.clear();
         playerQueue.clear();
+        whiteDeck.clear();
+        blackDeck.clear();
+        addCards();
         czar = 0;
         activeCard = null;
         pickingCard = false;
@@ -566,7 +565,6 @@ public class CAH {
             return;
         }
 
-        //CAH.owner = owner;
         CAH.rounds = rounds;
 
         // Wait for players to join
@@ -576,7 +574,7 @@ public class CAH {
         // Designate game owner and add him to game
         owner.isOwner = true;
         addPlayer(owner);
-        //
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             int roundCheck = round;
