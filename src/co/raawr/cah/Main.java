@@ -31,7 +31,7 @@ public class Main extends Core {
         try {
             identify("cahbot7543");
             Thread.sleep(1000);
-            joinChannels(new String[]{"#cah"});
+            joinChannels(new String[]{"#cah", "#coldstorm"});
         } catch (InterruptedException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
