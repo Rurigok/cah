@@ -408,6 +408,10 @@ public class CAH {
                 whiteDeck.addAll(p.hand);
                 players.remove(p);
             } else {
+                // Readjust czar index
+                if (players.indexOf(p) < czar) {
+                    czar--;
+                }
                 if (p.playedCard && pickingCard) {
                     // They left while the czar was picking, you have got to be fucking kidding me
                     // Remove them and their card and redisplay
