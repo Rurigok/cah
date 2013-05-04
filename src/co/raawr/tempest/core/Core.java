@@ -364,7 +364,8 @@ public class Core {
     }
 
     public void sendMessage(String target, String message) {
-        out.queueLine("PRIVMSG " + target + " :" + message);
+        //out.queueLine("PRIVMSG " + target + " :" + message);
+        out.forceLine("PRIVMSG " + target + " :" + message);
     }
 
     public void sendNotice(String target, String message) {
@@ -395,7 +396,7 @@ public class Core {
 
     private void handlePart(String hostmask, String line) {
         String[] parse = line.split(" ");
-        String reason = parse.length == 4 ? line.substring(line.indexOf(":")) : "" ;
+        String reason = parse.length == 4 ? line.substring(line.indexOf(":")) : "";
         onPart(getNick(hostmask), parse[2], reason);
     }
 
