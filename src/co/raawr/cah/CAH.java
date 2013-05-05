@@ -20,7 +20,7 @@ public class CAH {
     private static Main cah;
     // Game constants
     private static final int ROUND_LIMIT_MIN = 3;
-    private static final int ROUND_LIMIT_MAX = 25;
+    private static final int ROUND_LIMIT_MAX = 30;
     private static final int PLAYER_HAND_MAX = 10;
     // Player and card handling lists
     private static ArrayList<Player> players = new ArrayList<>();
@@ -194,12 +194,12 @@ public class CAH {
             }
             for (int j = 0; j < p.hand.size(); j++) {
                 if (!p.isCzar) {
-                    // If message goes over 450, print the cards gotten thus far
+                    // If message goes over 300, print the cards gotten thus far
                     if (cards.length() > 300) {
                         cah.sendMessage(p.nick, cards);
                         cards = "";
                     }
-                    cards += (j + 1) + ": [" + p.hand.get(j).content + "] ";
+                    cards += "[" + (j + 1) + " : " + p.hand.get(j).content + "] ";
                 }
             }
             // Do not show cards to czar
@@ -306,12 +306,19 @@ public class CAH {
         playersTemp.addAll(czarHand.keySet());
         Collections.shuffle(playersTemp);
 
+        // Display black card again
+        cah.sendMessage("#cah", "Black card: [" + activeCard.content + "]");
+
         // Display and remove the card from their hand
         for (int i = 0; i < playersTemp.size(); i++) {
+            if (cards.length() > 300) {
+                cah.sendMessage("#cah", cards);
+                cards = "";
+            }
             Card c = czarHand.get(playersTemp.get(i));
             cards += "[" + (i + 1) + " : " + c.content + "] ";
         }
-        cah.sendMessage("#cah", "Black card: [" + activeCard.content + "]");
+
         cah.sendMessage("#cah", cards);
         cah.sendMessage("#cah", "Choose a card, Czar " + players.get(czar).nick + ".");
         pickingCard = true;
