@@ -4,9 +4,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -17,7 +19,7 @@ public class Out extends Thread {
     Socket sock;
     Core core;
     BufferedWriter out;
-    Queue<String> queue = new LinkedList<>();
+    LinkedBlockingQueue<String> queue = new LinkedBlockingQueue<>();
     volatile int delay = 100;
 
     public Out(Socket s, Core c) {
@@ -34,12 +36,10 @@ public class Out extends Thread {
     public void run() {
         //Begin sending messages from the queue
         while (core.listening) {
-            if (!queue.isEmpty()) {
-                try {
-                    sendLine(queue.remove());
-                    Thread.sleep(delay);
-                } catch (InterruptedException | NoSuchElementException ex) {
-                }
+            try {
+                sendLine(queue.take());
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Out.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
